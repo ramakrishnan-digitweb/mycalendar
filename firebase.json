@@ -1,0 +1,37 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": ["node_modules", ".git", "*.local", "src", "*.example"],
+      "predeploy": ["npm --prefix functions run build"]
+    }
+  ],
+  "hosting": {
+    "public": "web/dist",
+    "predeploy": ["npm --prefix web run build"],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "/api/**", "function": { "functionId": "api", "region": "us-central1" } },
+      { "source": "**", "destination": "/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "/assets/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      }
+    ]
+  },
+  "emulators": {
+    "auth": { "port": 9099 },
+    "functions": { "port": 5001 },
+    "firestore": { "port": 8080 },
+    "hosting": { "port": 5000 },
+    "ui": { "enabled": true },
+    "singleProjectMode": true
+  }
+}
